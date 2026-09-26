@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quan Sát Dữ Liệu & Pipeline Tự Phục Hồi Cho RAG - Demo Thực Nghiệm</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Thanh Điều Hướng Header -->
+  <header class="header">
+    <div class="brand-wrapper">
+      <div class="brand-icon">⚡</div>
+      <div class="brand-titles">
+        <h1>RAG Observability & Idempotent Pipeline</h1>
+        <p>Báo Cáo Lab Day 10 &bull; Nhóm AIGANG &bull; Sinh viên: Lục Tiến Đạt (MSSV: 2A202602969)</p>
+      </div>
+    </div>
+
+    <!-- Danh sách Tab -->
+    <nav class="nav-tabs">
+      <button class="tab-btn active" data-tab="tab-stepper">
+        <span>🔄</span> Tiến Trình Pipeline
+      </button>
+      <button class="tab-btn" data-tab="tab-matrix">
+        <span>📊</span> Đối So Sánh 3 Trạng Thái
+      </button>
+      <button class="tab-btn" data-tab="tab-rag">
+        <span>🔍</span> RAG Playground
+      </button>
+      <button class="tab-btn" data-tab="tab-simulator">
+        <span>🛠️</span> Mô Phỏng Phục Hồi
+      </button>
+    </nav>
+
+    <!-- Trạng thái Hệ Thống -->
+    <div class="meta-status">
+      <div class="status-badge">
+        <span class="status-dot"></span>
+        <span>Hệ Thống Đang Chạy</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Khung Chứa Nội Dung Chính -->
+  <main class="container">
+
+    <!-- ==================== TAB 1: TIẾN TRÌNH PIPELINE ==================== -->
+    <section id="tab-stepper" class="tab-panel active">
+      <div class="stepper-header">
+        <h2>Tiến Trình Kiến Trúc Pipeline & Khả Năng Quan Sát Dữ Liệu</h2>
+        <p>Khám phá 6 giai đoạn kỹ thuật cốt lõi: Từ lưu trữ dữ liệu thô Crossref bất biến, kiểm soát chất lượng qua Great Expectations, kiểm thử lỗi ngầm (Silent Failure), đến cơ chế tự phục hồi bảo toàn tính bất biến (Idempotent Recovery).</p>
+      </div>
+
+      <!-- Stepper Nút bấm -->
+      <div class="stepper-nav">
+        <div class="step-item active" data-step="0">
+          <div class="step-num">BƯỚC 01</div>
+          <div class="step-title">Thu Thập & Lưu Trữ Raw</div>
+          <span class="step-tag tag-blue">Crossref API</span>
+        </div>
+        <div class="step-item" data-step="1">
+          <div class="step-num">BƯỚC 02</div>
+          <div class="step-title">Tiền Xử Lý & Khử Trùng</div>
+          <span class="step-tag tag-cyan">Pandas Normalization</span>
+        </div>
+        <div class="step-item" data-step="2">
+          <div class="step-num">BƯỚC 03</div>
+          <div class="step-title">Cổng Kiểm Định Chất Lượng</div>
+          <span class="step-tag tag-emerald">Great Expectations 1.x</span>
+        </div>
+        <div class="step-item" data-step="3">
+          <div class="step-num">BƯỚC 04</div>
+          <div class="step-title">Vector Store & RAG Baseline</div>
+          <span class="step-tag tag-blue">ChromaDB + Embeddings</span>
+        </div>
+        <div class="step-item" data-step="4">
+          <div class="step-num">BƯỚC 05</div>
+          <div class="step-title">Tiêm Lỗi Ngầm (Silent Failure)</div>
+          <span class="step-tag tag-rose">6 Kịch Bản Biến Dạng</span>
+        </div>
+        <div class="step-item" data-step="5">
+          <div class="step-num">BƯỚC 06</div>
+          <div class="step-title">Tự Phục Hồi Bất Biến</div>
+          <span class="step-tag tag-amber">Idempotent Repair</span>
+        </div>
+      </div>
+
+      <!-- Chi Tiết Giai Đoạn Đang Chọn -->
+      <div class="stage-detail-card">
+        <div class="stage-detail-grid">
+          <div class="stage-info">
+            <h3 id="stage-detail-title">Bước 01: Thu Thập & Lưu Trữ Dữ Liệu Thô (Raw Preservation)</h3>
+            <p id="stage-detail-desc">Dữ liệu phản hồi gốc từ Crossref REST API được lưu trữ nguyên vẹn dưới dạng tệp JSON bất biến trước mọi bước xử lý hay làm sạch.</p>
+            
+            <ul class="stage-feature-list" id="stage-feature-list">
+              <!-- Render động -->
+            </ul>
+
+            <div class="alert-banner info" id="stage-banner">
+              <strong>Nguyên Lý Kỹ Thuật Cốt Lõi:</strong> Dữ liệu thô (Raw) là nguồn chân lý duy nhất (Single Source of Truth). Khi dữ liệu phái sinh bị lỗi hoặc logic làm sạch thay đổi, hệ thống có thể chạy lại từ đầu mà không cần gọi lại API bên ngoài.
+            </div>
+          </div>
+
+          <!-- Trình Xem Mã Nguồn / Artifact -->
+          <div class="code-viewer">
+            <div class="code-header">
+              <span id="code-filename">src/ingestion/crossref.py</span>
+              <span id="code-lang">Python 3.11</span>
+            </div>
+            <pre class="code-content" id="stage-code-snippet">
+# Đang tải mã nguồn giai đoạn...
+            </pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 2: ĐỐI SO SÁNH 3 TRẠNG THÁI ==================== -->
+    <section id="tab-matrix" class="tab-panel">
+      <!-- Cảnh Báo Hiện Tượng Lỗi Ngầm -->
+      <div class="alert-banner warning">
+        <span>⚠️</span>
+        <div>
+          <strong>Thực Nghiệm Hiện Tượng Lỗi Ngầm (Silent Failure):</strong> Khi dữ liệu bị biến dạng, toàn bộ pipeline và API vẫn phản hồi mã HTTP 200 mà không hề crash. Tuy nhiên, tỷ lệ truy xuất đúng (Hit Rate) lập tức sụp đổ từ <strong>100% xuống 60%</strong> và điểm F1 giảm xuống <strong>64.6%</strong>. Cổng kiểm định Great Expectations lập tức bắt trọn lỗi, ngăn chặn vector store bị nhiễm bẩn trong thực tế.
+        </div>
+      </div>
+
+      <!-- Lưới Thẻ Điểm (Scorecards) -->
+      <div class="scorecards-grid">
+        <!-- Baseline Card -->
+        <div class="state-card baseline">
+          <div class="state-card-header">
+            <div class="state-title">1. Trạng Thái Gốc (Baseline)</div>
+            <span class="state-pill clean">Dữ Liệu Sạch</span>
+          </div>
+          <div class="big-metric-row">
+            <div class="big-metric-item">
+              <span class="big-metric-value" style="color: var(--accent-secondary);">100%</span>
+              <span class="big-metric-label">Tỷ Lệ Hit Rate</span>
+            </div>
+            <div class="big-metric-item">
+              <span class="big-metric-value" style="color: var(--accent-secondary);">100%</span>
+              <span class="big-metric-label">Điểm Token F1</span>
+            </div>
+          </div>
+          <div class="metric-micro-list">
+            <div class="metric-micro-row">
+              <span>Số Bài Báo Chuẩn Hóa:</span>
+              <span>24 bài báo</span>
+            </div>
+            <div class="metric-micro-row">
+              <span>Cổng Kiểm Định GX:</span>
+              <span class="badge-tag badge-pass">ĐẠT (100% - 0 lỗi)</span>
+            </div>
+            <div class="metric-micro-row">
+              <span>Chuẩn Độ Tươi SLA:</span>
+              <span class="badge-tag badge-pass">ĐẠT (&lt; 180 ngày)</span>
+            </div>
+            <div class="metric-micro-row">
+              <span>Độ Chính Xác Giám Khảo:</span>
+              <span>100.0% (5.0 / 5.0)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Corrupted Card -->
+        <div class="state-card corrupted">
+          <div class="state-card-header">
+            <div class="state-title">2. Trạng Thái Biến Dạng (Corrupted)</div>
+            <span class="state-pill corrupt">Lỗi Ngầm (Silent)</span>
+          </div>
+          <div class="big-metric-row">
+            <div class="big-metric-item">
+              <span class="big-metric-value" style="color: var(--accent-danger);">60.0%</span>
+              <span class="big-metric-label">Hit Rate (-40%)</span>
+            </div>
+            <div class="big-metric-item">
+              <span class="big-metric-value" style="color: var(--accent-danger);">64.6%</span>
+              <span class="big-metric-label">Token F1 (-35.4%)</span>
+            </div>
+          </div>
+          <div class="metric-micro-list">
+            <div class="metric-micro-row">
+              <span>Số Bản Ghi Còn Lại:</span>
+              <span style="color: var(--accent-danger);">22 bài báo (2 bản ghi trùng)</span>
+            </div>
+            <div class="metric-micro-row">
+              <span>Cổng Kiểm Định GX:</span>
+              <span class="badge-tag badge-fail">THẤT BẠI (2 Luật Vi Phạm)</span>
+            </div>
+            <div class="metric-micro-row">
+              <span>Chuẩn Độ Tươi SLA:</span>
+              <span class="badge-tag badge-fail">THẤT BẠI (Dữ liệu cũ)</span>
+            </div>
+            <div class="metric-micro-row">
+              <span>Độ Chính Xác Giám Khảo:</span>
+              <span style="color: var(--accent-danger);">60.0% (3.4 / 5.0)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Repaired Card -->
+        <div class="state-card repaired">
+          <div class="state-card-header">
+            <div class="state-title">3. Trạng Thái Phục Hồi (Repaired)</div>
+            <span class="state-pill restored">Bất Biến (Idempotent)</span>
+          </div>
+          <div class="big-metric-row">
+            <div class="big-metric-item">
+              <span class="big-metric-value" style="color: var(--accent-success);">100%</span>
+              <span class="big-metric-label">Hit Rate (+40%)</span>
+            </div>
+            <div class="big-metric-item">
+              <span class="big-metric-value" style="color: var(--accent-success);">100%</span>
+              <span class="big-metric-label">Token F1 (+35.4%)</span>
+            </div>
+          </div>
+          <div class="metric-micro-list">
+            <div class="metric-micro-row">
+              <span>Số Bài Báo Khôi Phục:</span>
+              <span>24 bài báo</span>
+            </div>
+            <div class="metric-micro-row">
+              <span>Cổng Kiểm Định GX:</span>
+              <span class="badge-tag badge-pass">ĐẠT (100% - 0 lỗi)</span>
+            </div>
+            <div class="metric-micro-row">
+              <span>Chuẩn Độ Tươi SLA:</span>
+              <span class="badge-tag badge-pass">ĐẠT (&lt; 180 ngày)</span>
+            </div>
+            <div class="metric-micro-row">
+              <span>Độ Chính Xác Giám Khảo:</span>
+              <span>100.0% (5.0 / 5.0)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Biểu Đồ So Sánh Trực Quan -->
+      <div class="charts-and-table-grid">
+        <!-- Radar Chart -->
+        <div class="glass-card">
+          <h3 style="font-size: 1rem; margin-bottom: 1rem;">Biểu Đồ Radar: 5 Chiều Sức Khỏe Toàn Diện Của Pipeline</h3>
+          <div class="chart-box">
+            <canvas id="radarChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Bar Comparison Chart -->
+        <div class="glass-card">
+          <h3 style="font-size: 1rem; margin-bottom: 1rem;">Biểu Đồ Cột: So Sánh Chi Tiết Chỉ Số Hiệu Năng RAG</h3>
+          <div class="chart-box">
+            <canvas id="barChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bảng Đo Lường Toàn Diện -->
+      <div class="glass-card" style="margin-bottom: 2rem;">
+        <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Bảng Ma Trận Dữ Liệu Đối So Sánh Đầy Đủ</h3>
+        <table class="custom-table">
+          <thead>
+            <tr>
+              <th>Chỉ Số Đánh Giá / Khía Cạnh</th>
+              <th>1. Gốc (Baseline)</th>
+              <th>2. Biến Dạng (Corrupted)</th>
+              <th>3. Phục Hồi (Repaired)</th>
+              <th>Độ Lệch Phục Hồi (Delta)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Tỷ Lệ Truy Xuất Đúng (Retrieval Hit Rate @ top-3)</strong></td>
+              <td><span class="badge-tag badge-pass">100.0%</span></td>
+              <td><span class="badge-tag badge-fail">60.0%</span></td>
+              <td><span class="badge-tag badge-pass">100.0%</span></td>
+              <td style="color: var(--accent-success); font-weight: bold;">+40.0%</td>
+            </tr>
+            <tr>
+              <td><strong>Điểm Trung Bình Token F1</strong></td>
+              <td>100.0%</td>
+              <td>64.56%</td>
+              <td>100.0%</td>
+              <td style="color: var(--accent-success); font-weight: bold;">+35.44%</td>
+            </tr>
+            <tr>
+              <td><strong>Độ Chính Xác Giám Khảo (Judge Accuracy)</strong></td>
+              <td>100.0%</td>
+              <td>60.0%</td>
+              <td>100.0%</td>
+              <td style="color: var(--accent-success); font-weight: bold;">+40.0%</td>
+            </tr>
+            <tr>
+              <td><strong>Điểm Giám Khảo Trung Bình</strong></td>
+              <td>5.00 / 5.0</td>
+              <td>3.40 / 5.0</td>
+              <td>5.00 / 5.0</td>
+              <td style="color: var(--accent-success); font-weight: bold;">+1.60 điểm</td>
+            </tr>
+            <tr>
+              <td><strong>Cổng Kiểm Định Great Expectations</strong></td>
+              <td><span class="badge-tag badge-pass">ĐẠT (0 Lỗi)</span></td>
+              <td><span class="badge-tag badge-fail">THẤT BẠI (2 Lỗi)</span></td>
+              <td><span class="badge-tag badge-pass">ĐẠT (0 Lỗi)</span></td>
+              <td style="color: var(--accent-success); font-weight: bold;">Khôi phục 100%</td>
+            </tr>
+            <tr>
+              <td><strong>Chuẩn Độ Tươi SLA (&lt; 180 Ngày)</strong></td>
+              <td><span class="badge-tag badge-pass">ĐẠT</span></td>
+              <td><span class="badge-tag badge-fail">THẤT BẠI (33% Cũ)</span></td>
+              <td><span class="badge-tag badge-pass">ĐẠT</span></td>
+              <td style="color: var(--accent-success); font-weight: bold;">Khôi phục 100%</td>
+            </tr>
+            <tr>
+              <td><strong>Số Lượng Bản Ghi Không Trùng Lặp</strong></td>
+              <td>24 bản ghi</td>
+              <td>22 bản ghi</td>
+              <td>24 bản ghi</td>
+              <td style="color: var(--accent-success); font-weight: bold;">+2 bản ghi</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 6 Kịch Bản Lỗi Dữ Liệu Nhân Tạo -->
+      <div class="glass-card">
+        <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">6 Kịch Bản Biến Dạng Dữ Liệu Nhân Tạo (Giai đoạn 2)</h3>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+          6 lỗi mô phỏng sát với thực tế sản xuất được đưa vào pipeline để kiểm tra hệ thống cảnh báo và chứng minh lỗi ngầm đối với mô hình RAG:
+        </p>
+
+        <div class="scenarios-grid">
+          <div class="scenario-card">
+            <h4>1. drop_latest_records</h4>
+            <p>Mô phỏng sự cố đứt gãy kết nối phía nguồn. Bỏ rơi hoàn toàn 4 bài báo nghiên cứu mới nhất.</p>
+          </div>
+          <div class="scenario-card">
+            <h4>2. blank_summary</h4>
+            <p>Mô phỏng lỗi thay đổi cấu trúc metadata từ nhà xuất bản. Xóa trắng tóm tắt của 2 bài báo.</p>
+          </div>
+          <div class="scenario-card">
+            <h4>3. inject_noise</h4>
+            <p>Mô phỏng lỗi mã hóa font hoặc lỗi parser mạng. Chèn các chuỗi ký tự rác vào phần tóm tắt.</p>
+          </div>
+          <div class="scenario-card">
+            <h4>4. truncate_title</h4>
+            <p>Mô phỏng lỗi cắt ngắn cột trong cơ sở dữ liệu (Varchar overflow). Cắt tiêu đề còn dưới 8 ký tự.</p>
+          </div>
+          <div class="scenario-card">
+            <h4>5. stale_date</h4>
+            <p>Mô phỏng lỗi sai lệch đồng hồ hệ thống (Clock drift). Lùi ngày xuất bản của 8 bài báo về 365 ngày trước.</p>
+          </div>
+          <div class="scenario-card">
+            <h4>6. duplicate_rows</h4>
+            <p>Mô phỏng lỗi retry nhiều lần từ hàng đợi (At-least-once queue). Nhân bản 2 dòng gây trùng lặp khóa chính.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 3: RAG PLAYGROUND THỰC NGHIỆM ==================== -->
+    <section id="tab-rag" class="tab-panel">
+      <div class="rag-playground-grid">
+        <!-- Danh Sách Câu Hỏi -->
+        <div class="query-sidebar glass-card">
+          <h3 style="font-size: 1rem; margin-bottom: 0.75rem;">10 Câu Hỏi Kiểm Thử Chuẩn Hóa</h3>
+          
+          <div class="filter-pills">
+            <button class="filter-btn active" data-filter="all">Tất Cả (10)</button>
+            <button class="filter-btn" data-filter="summary">Tóm Tắt</button>
+            <button class="filter-btn" data-filter="retrieval_augmented">RAG Chuyên Sâu</button>
+            <button class="filter-btn" data-filter="privacy_investigation">Bảo Mật</button>
+            <button class="filter-btn" data-filter="metadata_factual">Thực Tế</button>
+          </div>
+
+          <div class="query-list" id="query-list">
+            <!-- Nạp động từ test_set.json -->
+          </div>
+        </div>
+
+        <!-- Khung Soi Chi Tiết Truy Vấn -->
+        <div class="rag-inspection-view">
+          <!-- Thanh Điều Khiển Collection -->
+          <div class="view-controls">
+            <div>
+              <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-right: 8px;">Tập Vector Store Đang Kích Hoạt:</span>
+            </div>
+            <div class="collection-switchers">
+              <button class="collection-btn baseline" data-col="baseline">1. Dữ Liệu Gốc (Baseline)</button>
+              <button class="collection-btn active corrupted" data-col="corrupted">2. Dữ Liệu Bị Lỗi (Corrupted)</button>
+              <button class="collection-btn repaired" data-col="repaired">3. Dữ Liệu Phục Hồi (Repaired)</button>
+            </div>
+          </div>
+
+          <!-- Hiển Thị Kết Quả Truy Vấn Hiện Tại -->
+          <div class="rag-result-card">
+            <div class="result-header">
+              <div class="query-display-box" style="flex: 1; margin-bottom: 0;">
+                <h4 id="rag-query-id">CÂU HỎI ĐÁNH GIÁ #001</h4>
+                <p id="rag-query-text">Đang tải câu hỏi...</p>
+              </div>
+              <div style="text-align: right;">
+                <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase;">Kết Quả Truy Xuất</div>
+                <div id="rag-hit-badge" class="badge-tag badge-fail" style="font-size: 0.95rem; padding: 4px 10px; margin-top: 4px;">BỎ LỠ (MISS)</div>
+              </div>
+            </div>
+
+            <!-- Thanh Đo Lường Thu Gọn -->
+            <div style="display: flex; gap: 1.5rem; margin-top: 1rem; margin-bottom: 1.25rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-subtle);">
+              <div>
+                <span style="font-size: 0.75rem; color: var(--text-dim);">ĐIỂM TOKEN F1: </span>
+                <strong id="rag-f1-val" style="color: #cbd5e1; font-family: var(--font-mono);">0.00%</strong>
+              </div>
+              <div>
+                <span style="font-size: 0.75rem; color: var(--text-dim);">ĐIỂM GIÁM KHẢO: </span>
+                <strong id="rag-judge-val" style="color: #cbd5e1; font-family: var(--font-mono);">2.0 / 5.0</strong>
+              </div>
+              <div>
+                <span style="font-size: 0.75rem; color: var(--text-dim);">MÃ TÀI LIỆU KỲ VỌNG: </span>
+                <code id="rag-expected-doc" style="font-size: 0.75rem; color: var(--accent-secondary);">10.21203/...</code>
+              </div>
+            </div>
+
+            <!-- Các Đoạn Ngữ Cảnh Truy Xuất Được -->
+            <div class="retrieval-section">
+              <div class="section-label">
+                <span>Đoạn Ngữ Cảnh Tìm Thấy (Top-3 Kết Quả Từ ChromaDB)</span>
+                <span id="rag-retrieved-doc-badge" style="font-size: 0.75rem; font-family: var(--font-mono); color: var(--text-dim);">Doc IDs: [...]</span>
+              </div>
+              <div id="rag-retrieved-chunks">
+                <!-- Nạp động -->
+              </div>
+            </div>
+
+            <!-- So Sánh Câu Trả Lời Kỳ Vọng vs Sinh Ra -->
+            <div class="answer-comparison-grid">
+              <div class="answer-box">
+                <h5>Câu Trả Lời Kỳ Vọng (Ground Truth)</h5>
+                <p id="rag-ground-truth">Đang tải chân lý mặt đất...</p>
+              </div>
+              <div class="answer-box">
+                <h5 id="rag-answer-label">Câu Trả Lời RAG Sinh Ra (Corrupted Collection)</h5>
+                <p id="rag-answer-text">Đang tải phản hồi của mô hình...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 4: MÔ PHỎNG TỰ PHỤC HỒI ==================== -->
+    <section id="tab-simulator" class="tab-panel">
+      <div class="alert-banner info">
+        <span>💡</span>
+        <div>
+          <strong>Định Nghĩa Toán Học Của Tính Bất Biến (Idempotence):</strong> Một thao tác được gọi là bất biến (Idempotent) nếu thực thi nó nhiều lần liên tiếp cũng tạo ra cùng một trạng thái duy nhất giống như khi thực thi một lần: <code>f(f(x)) = f(x)</code>. Trong pipeline này, việc dọn dẹp vector store và tái nạp từ nguồn dữ liệu thô (Raw) nguyên bản đảm bảo kết quả hoàn toàn nhất quán, không phát sinh bản ghi rác hay sai lệch dữ liệu.
+        </div>
+      </div>
+
+      <div class="simulator-layout">
+        <!-- Cửa Sổ Terminal Trực Tiếp -->
+        <div class="terminal-window">
+          <div class="terminal-header">
+            <div class="terminal-dots">
+              <span class="dot-red"></span>
+              <span class="dot-yellow"></span>
+              <span class="dot-green"></span>
+            </div>
+            <div class="terminal-title">idempotent-recovery-worker &bull; logs</div>
+            <div style="font-size: 0.7rem; color: var(--accent-success); font-family: var(--font-mono);">IDEMPOTENT_PASS</div>
+          </div>
+          <div class="terminal-body" id="sim-terminal-body">
+            <div class="log-line"><span class="log-ts">[11:00:01]</span> <span class="log-info">Hệ thống khởi chạy ở Trạng thái Biến Dạng (Corrupted).</span></div>
+            <div class="log-line"><span class="log-ts">[11:00:02]</span> <span class="log-warn">Cảnh báo giám sát: Phát hiện 2 vi phạm Great Expectations (trùng lặp khóa, cắt cụt tiêu đề).</span></div>
+            <div class="log-line"><span class="log-ts">[11:00:03]</span> <span class="log-error">Tỷ lệ truy xuất RAG sụt giảm xuống 60.0% (-40.0% so với chuẩn).</span></div>
+            <div class="log-line"><span class="log-ts">[11:00:04]</span> <span class="log-info">Đang chờ lệnh kích hoạt chu trình tự phục hồi...</span></div>
+          </div>
+        </div>
+
+        <!-- Bảng Điều Khiển & Quy Trình -->
+        <div class="glass-card idempotency-card">
+          <div>
+            <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem;">Bộ Điều Khiển Tự Phục Hồi Bất Biến</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+              Kích hoạt toàn bộ chuỗi phục hồi dữ liệu tự động. Quan sát cách hệ thống làm sạch môi trường, tải lại dữ liệu thô nguyên bản, xác thực chất lượng và khôi phục 100% độ chính xác cho RAG.
+            </p>
+
+            <div class="math-formula">
+              <div class="formula">f(f(x)) = f(x)</div>
+              <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Chạy 1 lần hay 100 lần &rarr; luôn trả về đúng 24 bản ghi chuẩn hóa & 100% Hit Rate.</div>
+            </div>
+
+            <!-- Các Bước Quy Trình Trực Quan -->
+            <div class="flow-step-box">
+              <div class="flow-icon step1">1</div>
+              <div>
+                <strong style="font-size: 0.85rem;">Xóa Sạch Bộ Sưu Tập Vector (Purge)</strong>
+                <p style="font-size: 0.75rem; color: var(--text-muted);">Xóa bỏ toàn bộ embeddings bị lỗi khỏi ChromaDB, không để sót vector ma.</p>
+              </div>
+            </div>
+
+            <div class="flow-step-box">
+              <div class="flow-icon step2">2</div>
+              <div>
+                <strong style="font-size: 0.85rem;">Tải Dữ Liệu Thô Nguyên Bản (Immutable Raw)</strong>
+                <p style="font-size: 0.75rem; color: var(--text-muted);">Đọc tệp <code>data/raw/crossref_records.json</code> (nguồn chân lý bất biến).</p>
+              </div>
+            </div>
+
+            <div class="flow-step-box">
+              <div class="flow-icon step3">3</div>
+              <div>
+                <strong style="font-size: 0.85rem;">Làm Sạch & Kiểm Định Great Expectations</strong>
+                <p style="font-size: 0.75rem; color: var(--text-muted);">Chạy bộ 7 kỳ vọng kiểm thử GX + Chuẩn độ tươi SLA &lt; 180 ngày.</p>
+              </div>
+            </div>
+
+            <div class="flow-step-box">
+              <div class="flow-icon step4">4</div>
+              <div>
+                <strong style="font-size: 0.85rem;">Đánh Chỉ Mục Lại & Đo Lường Độc Lập</strong>
+                <p style="font-size: 0.75rem; color: var(--text-muted);">Tạo lại embeddings, chạy 10 câu hỏi chuẩn hóa và kiểm chứng đạt 100% Hit Rate.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="sim-actions">
+            <button class="btn-primary" id="btn-trigger-repair">
+              <span>🚀</span> Kích Hoạt Tự Phục Hồi
+            </button>
+            <button class="btn-secondary" id="btn-reset-sim">
+              <span>🔄</span> Đặt Lại Trạng Thái Lỗi
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Chân Trang (Footer) -->
+  <footer class="footer">
+    <p>Data Pipeline & Data Observability for RAG &bull; Báo Cáo Toàn Diện Bài Tập Lab Day 10 &bull; Phát triển với HTML5, CSS3 & Vanilla JavaScript</p>
+    <p style="margin-top: 4px; color: var(--text-dim);">Xây dựng bởi Nhóm AIGANG &bull; Sinh viên: Lục Tiến Đạt (Mã SV: 2A202602969)</p>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
