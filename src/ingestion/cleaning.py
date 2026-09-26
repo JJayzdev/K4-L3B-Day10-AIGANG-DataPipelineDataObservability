@@ -1,6 +1,6 @@
 import re
 from dataclasses import asdict
-from datetime import date, datetime
+from datetime import datetime
 
 import pandas as pd
 
@@ -11,6 +11,17 @@ def _normalize_space(text: str | None) -> str:
     if not text:
         return ""
     return re.sub(r"\s+", " ", str(text)).strip()
+
+
+def _normalize_date(value: str | None) -> str:
+    """Return an ISO calendar date; leave missing or invalid dates empty."""
+    text = _normalize_space(value)
+    if not text:
+        return ""
+    try:
+        return datetime.fromisoformat(text.replace("Z", "+00:00")).date().isoformat()
+    except ValueError:
+        return ""
 
 
 def build_clean_dataframe(records: list[PaperRecord], run_date: datetime) -> pd.DataFrame:
@@ -53,14 +64,11 @@ def build_clean_dataframe(records: list[PaperRecord], run_date: datetime) -> pd.
         categories_joined = ", ".join(categories) if categories else "General"
         primary_category = categories[0] if categories else "General"
 
-        published_str = _normalize_space(rec_dict.get("published")) or "2026-01-01"
-        try:
-            pub_date = datetime.strptime(published_str, "%Y-%m-%d").date()
-        except ValueError:
-            pub_date = date(2026, 1, 1)
-            published_str = "2026-01-01"
-
-        age_days = max(0, (run_date_val - pub_date).days)
+        published_str = _normalize_date(rec_dict.get("published"))
+        age_days = (
+            (run_date_val - datetime.fromisoformat(published_str).date()).days
+            if published_str else pd.NA
+        )
         summary_chars = len(summary)
 
         text_for_embedding = (
@@ -81,7 +89,7 @@ def build_clean_dataframe(records: list[PaperRecord], run_date: datetime) -> pd.
             "categories_joined": categories_joined,
             "primary_category": primary_category,
             "published": published_str,
-            "updated": _normalize_space(rec_dict.get("updated")) or published_str,
+            "updated": _normalize_date(rec_dict.get("updated")) or published_str,
             "abs_url": _normalize_space(rec_dict.get("abs_url")),
             "pdf_url": _normalize_space(rec_dict.get("pdf_url")),
             "comment": _normalize_space(rec_dict.get("comment")),
@@ -92,6 +100,9 @@ def build_clean_dataframe(records: list[PaperRecord], run_date: datetime) -> pd.
         rows.append(rec_dict)
 
     df = pd.DataFrame(rows)
+    if df.empty:
+        return df
+    df["age_days"] = df["age_days"].astype("Int64")
 
     # Khử trùng lặp bản ghi theo paper_id
     df = df.drop_duplicates(subset=["paper_id"], keep="first")
