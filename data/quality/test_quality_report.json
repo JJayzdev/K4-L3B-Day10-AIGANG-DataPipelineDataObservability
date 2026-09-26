@@ -1,0 +1,18 @@
+{
+  "report_name": "test",
+  "success": true,
+  "gx_success": true,
+  "is_fresh": true,
+  "row_count": 24,
+  "failed_expectations_count": 0,
+  "failed_expectations": [],
+  "freshness": {
+    "latest_published": "2026-09-15",
+    "oldest_published": "2026-04-01",
+    "stale_rows": 0,
+    "total_rows": 24,
+    "stale_ratio": 0.0,
+    "threshold_days": 180,
+    "is_fresh": true
+  }
+}

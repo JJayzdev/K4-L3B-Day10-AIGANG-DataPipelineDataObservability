@@ -1,6 +1,7 @@
 import re
 from dataclasses import asdict
 from datetime import date, datetime
+from pathlib import Path
 
 import pandas as pd
 
@@ -100,3 +101,12 @@ def build_clean_dataframe(records: list[PaperRecord], run_date: datetime) -> pd.
     df = df.sort_values(by="published", ascending=False).reset_index(drop=True)
 
     return df
+
+
+def save_clean_dataframe(df: pd.DataFrame, csv_path: Path, json_path: Path) -> None:
+    """Save cleaned dataframe to CSV and JSON."""
+    csv_path.parent.mkdir(parents=True, exist_ok=True)
+    json_path.parent.mkdir(parents=True, exist_ok=True)
+    df.to_csv(csv_path, index=False, encoding="utf-8")
+    df.to_json(json_path, orient="records", indent=2, force_ascii=False)
+
