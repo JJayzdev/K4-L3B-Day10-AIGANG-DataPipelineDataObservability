@@ -20,13 +20,14 @@ class AnswerResult:
 def _extract_answer(question: str, top_result: SearchResult) -> str:
     lowered = question.lower()
     metadata = top_result.metadata
-    if "who authored" in lowered or "list the authors" in lowered:
+    if "who authored" in lowered or "list the authors" in lowered or "who are the authors" in lowered or "authors" in lowered:
         return metadata["authors_joined"]
     if "when was" in lowered or "publication date" in lowered or "published on" in lowered:
         return metadata["published"]
-    if "what categories" in lowered:
+    if "what categories" in lowered or "categories" in lowered or "subjects" in lowered:
         return metadata["categories_joined"]
     return first_sentence(metadata["summary"])
+
 
 
 def answer_question(question: str, settings: Settings, index: LocalEmbeddingIndex, top_k: int | None = None) -> AnswerResult:

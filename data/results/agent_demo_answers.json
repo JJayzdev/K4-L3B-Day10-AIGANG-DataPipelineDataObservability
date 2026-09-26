@@ -1,0 +1,32 @@
+[
+  {
+    "question": "What is the summary of the paper 'DOLPHIN: A Privacy-Preserving Digital Investigation Readiness Assessment Framework based on Offline Large Language Models and Retrieval-Augmented Generation'?",
+    "answer": "Abstract Increasingly, digital forensic investigations require a quick, reliable, and privacy-preserving assessment of case materials before formal forensic examination.",
+    "retrieved_doc_ids": [
+      "10.21203/rs.3.rs-10489777/v1",
+      "10.21203/rs.3.rs-10349437/v1",
+      "10.52060/juptik.v4i1.4318",
+      "10.21203/rs.3.rs-10012178/v1"
+    ]
+  },
+  {
+    "question": "Who are the authors of the paper 'Advances in Reinforcement Learning for Retrieval-Augmented Generation in Large Language Model'?",
+    "answer": "Zunlong Hong",
+    "retrieved_doc_ids": [
+      "10.54254/2755-2721/2026.36624",
+      "10.63646/kpqm1958",
+      "10.36948/ijfmr.2026.v08i04.85777",
+      "10.70267/aitia.2026482489"
+    ]
+  },
+  {
+    "question": "When was the paper 'Evidence Constrained Agentic Retrieval Augmented Generation for Substation Civil Engineering Preliminary Design Documents in a Single Project Study' published?",
+    "answer": "2026-08-26",
+    "retrieved_doc_ids": [
+      "10.21203/rs.3.rs-10423755/v1",
+      "10.21203/rs.3.rs-10349437/v1",
+      "10.3390/buildings16132637",
+      "10.63646/kpqm1958"
+    ]
+  }
+]

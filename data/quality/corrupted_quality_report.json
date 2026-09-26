@@ -1,0 +1,34 @@
+{
+  "report_name": "corrupted",
+  "success": false,
+  "gx_success": false,
+  "is_fresh": false,
+  "row_count": 22,
+  "failed_expectations_count": 2,
+  "failed_expectations": [
+    {
+      "expectation_type": "expect_column_values_to_be_unique",
+      "kwargs": {
+        "batch_id": "papers_source_corrupted-papers_asset_corrupted",
+        "column": "paper_id"
+      }
+    },
+    {
+      "expectation_type": "expect_column_value_lengths_to_be_between",
+      "kwargs": {
+        "batch_id": "papers_source_corrupted-papers_asset_corrupted",
+        "column": "summary",
+        "min_value": 30
+      }
+    }
+  ],
+  "freshness": {
+    "latest_published": "2026-09-04",
+    "oldest_published": "2025-06-15",
+    "stale_rows": 8,
+    "total_rows": 22,
+    "stale_ratio": 0.3636,
+    "threshold_days": 180,
+    "is_fresh": false
+  }
+}
