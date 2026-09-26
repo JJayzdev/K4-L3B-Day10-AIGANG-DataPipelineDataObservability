@@ -2,7 +2,7 @@
 
 - **Tên Nhóm:** `AIGANG`
 - **Mã Nhóm / Lớp:** `K4-L3-DAY10`
-- **Tên Repository Nộp Bài:** `K4-L3-DAY10-TenNhom-DataPipeline`
+- **Tên Repository Nộp Bài:** `K4-L3B-Day10-AIGANG-DataPipelineDataObservability`
 
 ---
 

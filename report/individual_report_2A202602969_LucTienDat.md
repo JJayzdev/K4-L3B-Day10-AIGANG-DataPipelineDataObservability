@@ -10,7 +10,7 @@
 | Thông tin | Nội dung |
 | :--- | :--- |
 | **Họ và tên** | Lục Tiến Đạt |
-| **MSSV** | `[Điền MSSV của bạn]` |
+| **MSSV** | `2A202602969` |
 | **Khóa/Lớp** | K4 - Lớp B (Ca Sáng, Thứ 7 26/09/2026) |
 | **Tên nhóm** | AIGANG |
 | **Vai trò chính** | Data Foundation & Ingestion Specialist (Phụ trách Bước 1 & Bước 2) |
