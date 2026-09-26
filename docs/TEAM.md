@@ -1,8 +1,8 @@
 # Danh Sách Thành Viên & Báo Cáo Phân Công Nhóm
 
 - **Tên Nhóm:** `AIGANG`
-- **Mã Nhóm / Lớp:** `K4-L3B-DAY10`
-- **Tên Repository Nộp Bài:** `K4-L3B-DAY10-AIGANG-DataPipelineDataObservability`
+- **Mã Nhóm / Lớp:** `K4-L3-DAY10`
+- **Tên Repository Nộp Bài:** `K4-L3-DAY10-TenNhom-DataPipeline`
 
 ---
 
@@ -11,7 +11,7 @@
 | STT | Họ và tên | MSSV | Email | Vai trò & Phân công công việc | Báo cáo cá nhân |
 |---:|---|---|---|---|---|
 | 1 | | | | Trưởng nhóm / Pipeline Integrator (`core/`, `phase1.py`, `corruption_flow.py`) | `report/<MSSV1>_HoTen.md` |
-| 2 | | | | Data Foundation & Recovery (`crossref.py`, `cleaning.py`, raw data) | `report/<MSSV2>_HoTen.md` |
+| 2 | Lục Tiến Đạt | 2A202602969 | luctiendat910@gmail.com | Data Foundation & Ingestion (`crossref.py`, Bước 1 & Bước 2) | `report/individual_report_2A202602969_LucTienDat.md` |
 | 3 | | | | RAG & Vector Index (`retrieval/index.py`, `embeddings.py`, ChromaDB) | `report/<MSSV3>_HoTen.md` |
 | 4 | | | | Observability & Evaluation (`quality.py` GX 1.x, `testset.py`, reporting) | `report/<MSSV4>_HoTen.md` |
 
@@ -30,14 +30,15 @@
 - **Điều học được / Đóng góp chính:**
   - Hiểu sâu sắc về thiết kế Idempotent Pipeline và quản lý trạng thái luồng dữ liệu đa tầng.
 
-### ## HoVaTen2-MSSV2
-- **Vai trò:** Phụ trách Ingestion, Làm sạch & Phục hồi dữ liệu.
+### ## Lục Tiến Đạt
+- **Vai trò:** Phụ trách Khởi tạo môi trường & Data Ingestion (Bước 1 & Bước 2).
 - **Công việc chi tiết đã hoàn thành:**
-  - Xây dựng module thu thập Crossref API với cơ chế Fallback offline trong `src/ingestion/crossref.py`.
-  - Chuẩn hóa schema, tính toán trường `age_days` và `text_for_embedding` trong `src/ingestion/cleaning.py`.
-  - Thực thi cơ chế Idempotent Repair phục hồi dữ liệu từ raw snapshot.
+  - Thiết lập môi trường ảo `.venv`, xử lý lỗi PyPI timeout qua việc tích hợp `uv` cài đặt đồng bộ 161 thư viện.
+  - Xây dựng module thu thập Crossref REST API trong `src/ingestion/crossref.py` với cơ chế cứu hộ Offline Fallback khi dính `429 Too Many Requests`.
+  - Bóc tách payload thành 24 đối tượng `PaperRecord`, lọc sạch HTML rác `<jats:p>` và cất giữ 2 file raw artifacts (`crossref_response.json`, `crossref_records.json`).
 - **Điều học được / Đóng góp chính:**
-  - Kỹ thuật truy vết nguồn gốc dữ liệu (Data Lineage) và bảo toàn raw snapshot trước khi biến đổi.
+  - Nắm vững nguyên tắc Raw Data Preservation (Lineage Anchor) để làm điểm tựa cho các cơ chế phục hồi dữ liệu phía sau.
+
 
 ### ## HoVaTen3-MSSV3
 - **Vai trò:** Phụ trách RAG, Vector Database & Embedding.
