@@ -8,17 +8,17 @@
 
 | STT | Họ và tên | MSSV | Email Git | Vai trò và phần việc sở hữu | Báo cáo cá nhân |
 | --: | --- | --- | --- | --- | --- |
-| 1 | Dương Văn Thành | `2A202602368` | `dvthanh.it04@gmail.com` | Data Observability & Quality Assurance — `src/observability/quality.py` | [`2A202602368-DuongVanThanh.md`](../report/2A202602368-DuongVanThanh.md) |
-| 2 | Hồ Ngọc Mai | `2A202602509` | `hnm908489@gmail.com` | Data Cleaning & Embedding Preparation — `src/ingestion/cleaning.py` | [`2A202602509_HoNgocMai.md`](../report/2A202602509_HoNgocMai.md) |
-| 3 | Nguyễn Việt Đức | `2A202602732` | `ducsmile1111@gmail.com` | Benchmark Test Set & Baseline Integration — `src/evaluation/testset.py`, `src/pipelines/phase1.py` | [`2A202602732_NguyenVietDuc.md`](../report/2A202602732_NguyenVietDuc.md) |
-| 4 | Lục Tiến Đạt | `2A202602969` | `luctiendat910@gmail.com` | Environment & Data Ingestion — `src/ingestion/crossref.py` | [`2A202602969-LucTienDat.md`](../report/2A202602969-LucTienDat.md) |
-| 5 | Mai Văn Trường | `2A202602983` | `maitruong1312205@gmail.com` | Data Corruption & Recovery Integration — `src/ingestion/corruption.py`, `src/pipelines/corruption_flow.py` | [`2A202602983_MaiVanTruong.md`](../report/2A202602983_MaiVanTruong.md) |
+| 1 | Dương Văn Thành | `2A202602368` | `dvthanh.it04@gmail.com` | **CP1 — Data Observability:** GX 1.x Quality Gate & Freshness SLA — `src/observability/quality.py` | [`2A202602368-DuongVanThanh.md`](../report/2A202602368-DuongVanThanh.md) |
+| 2 | Hồ Ngọc Mai | `2A202602509` | `hnm908489@gmail.com` | **CP1 — Data Cleaning:** chuẩn hóa dữ liệu và `text_for_embedding` — `src/ingestion/cleaning.py` | [`2A202602509_HoNgocMai.md`](../report/2A202602509_HoNgocMai.md) |
+| 3 | Nguyễn Việt Đức | `2A202602732` | `ducsmile1111@gmail.com` | **CP2–CP3 — Benchmark, ChromaDB Indexing & Baseline Pipeline** — `src/evaluation/testset.py`, `src/pipelines/phase1.py` | [`2A202602732_NguyenVietDuc.md`](../report/2A202602732_NguyenVietDuc.md) |
+| 4 | Lục Tiến Đạt | `2A202602969` | `luctiendat910@gmail.com` | **CP0 — Khởi tạo môi trường & Ingestion Raw Data** — `src/ingestion/crossref.py` | [`2A202602969-LucTienDat.md`](../report/2A202602969-LucTienDat.md) |
+| 5 | Mai Văn Trường | `2A202602983` | `maitruong1312205@gmail.com` | **CP4–CP5 — Synthetic Data Corruption, Idempotent Repair & Comparison Report** | [`2A202602983_MaiVanTruong.md`](../report/2A202602983_MaiVanTruong.md) |
 
 ## Cá nhân
 
 ### ## Dương Văn Thành-2A202602368
 
-- **Vai trò:** Phụ trách Data Observability & Quality Assurance.
+- **Vai trò:** Phụ trách **Checkpoint 1 — Data Observability với Great Expectations 1.x & Freshness SLA**.
 - **Công việc chi tiết đã hoàn thành:**
   - Thiết lập Quality Gate theo chuẩn **Great Expectations 1.x** trong `src/observability/quality.py` với sáu expectations về row count, completeness, uniqueness và độ dài `summary`.
   - Xây dựng Freshness SLA theo `age_days`: một dòng stale khi quá 180 ngày và dataset fail khi stale ratio vượt 25%.
@@ -30,7 +30,7 @@
 
 ### ## Hồ Ngọc Mai-2A202602509
 
-- **Vai trò:** Phụ trách Data Cleaning & Embedding Preparation.
+- **Vai trò:** Phụ trách phần **Data Cleaning & chuẩn hóa `text_for_embedding` của Checkpoint 1**.
 - **Công việc chi tiết đã hoàn thành:**
   - Hoàn thiện `build_clean_dataframe()` trong `src/ingestion/cleaning.py`.
   - Chuẩn hóa whitespace, tác giả, lĩnh vực và ngày ISO; lọc bản ghi thiếu `paper_id` hoặc `title`.
@@ -43,7 +43,7 @@
 
 ### ## Nguyễn Việt Đức-2A202602732
 
-- **Vai trò:** Phụ trách Benchmark Test Set & Baseline Pipeline Integration.
+- **Vai trò:** Phụ trách **Checkpoint 2 — Benchmark Test Set & ChromaDB Vector Store Indexing** và **Checkpoint 3 — Baseline Pipeline End-to-End & Báo cáo Pha 1**.
 - **Công việc chi tiết đã hoàn thành:**
   - Hoàn thiện `build_test_set()` trong `src/evaluation/testset.py`.
   - Sinh bộ benchmark 10 câu hỏi gồm 3 `summary`, 3 `authors`, 2 `date`, 2 `categories`, gắn với 10 DOI ground truth riêng biệt.
@@ -56,7 +56,7 @@
 
 ### ## Lục Tiến Đạt-2A202602969
 
-- **Vai trò:** Phụ trách Environment & Data Ingestion.
+- **Vai trò:** Phụ trách **Checkpoint 0 — Khởi tạo Môi trường & Ingestion Raw Data**.
 - **Công việc chi tiết đã hoàn thành:**
   - Thiết lập môi trường dự án và cài dependencies bằng `uv`.
   - Hoàn thiện `parse_crossref_payload()`, `fetch_source_records()` và `load_raw_records()` trong `src/ingestion/crossref.py`.
@@ -69,7 +69,7 @@
 
 ### ## Mai Văn Trường-2A202602983
 
-- **Vai trò:** Phụ trách Data Corruption & Self-Healing Pipeline.
+- **Vai trò:** Phụ trách **Checkpoint 4 — Synthetic Data Corruption & Đo lường Suy giảm** và **Checkpoint 5 — Idempotent Repair & Báo cáo Đối chiếu 3 Trạng thái**.
 - **Công việc chi tiết đã hoàn thành:**
   - Triển khai sáu corruption: drop latest records, blank summary, inject noise, truncate title, stale date và duplicate rows trong `src/ingestion/corruption.py`.
   - Ghi `corruption_log.json`, build collection `papers-corrupted` và đánh giá lại trên cùng benchmark.
@@ -79,3 +79,13 @@
 - **Điều học được / Đóng góp chính:**
   - Hiểu hiện tượng Silent Failure và cách phục hồi idempotent từ lineage anchor thay vì vá trực tiếp dữ liệu đã hỏng.
   - Bằng chứng: commits `d9ddfc1`, `7d8e3af` và artifact thực nghiệm tại commit `e243cea`.
+
+### ## CaNhom-CP6
+
+- **Vai trò:** Cùng phụ trách **Checkpoint 6 — Live Demo, Q&A & Nghiệm thu Nộp bài**.
+- **Công việc chi tiết đã hoàn thành:**
+  - Rà soát hai lệnh chạy `run_phase1.py` và `run_corruption_flow.py` cùng các artifact phục vụ demo.
+  - Chuẩn bị bảng đối chiếu Baseline, Corrupted và Repaired; thống nhất cách giải thích GX 1.x, Freshness SLA, vector embeddings, Silent Failure và Idempotent Repair.
+  - Hoàn thiện báo cáo nhóm, báo cáo cá nhân và kiểm tra commit của các thành viên trên nhánh `main`.
+- **Điều học được / Đóng góp chính:**
+  - Hiểu toàn bộ luồng end-to-end và khả năng phối hợp giữa ingestion, cleaning, indexing, evaluation, observability, corruption và repair.
