@@ -76,16 +76,20 @@ Hàm `repair_from_raw_snapshot(settings)` được thiết kế tuân thủ nguy
 
 ## 5. Bảng đối chiếu số liệu thực tế qua 3 trạng thái
 
-Dưới đây là kết quả đo lường trích xuất trực tiếp từ các artifact được pipeline sinh ra:
+Dưới đây là kết quả đo lường trích xuất trực tiếp từ các artifact thực nghiệm của pipeline (`data/reports/corruption_report.md` và `data/results/*_metrics.json`):
 
 | Tiêu chí / Chỉ số | Baseline (Dữ liệu chuẩn) | Corrupted (Dữ liệu bẩn) | Repaired (Sau phục hồi) | Nhận xét & Đánh giá |
 | :--- | :---: | :---: | :---: | :--- |
-| **Số câu hỏi kiểm thử** | 10 | 10 | 10 | Tập kiểm thử giữ nguyên vẹn |
-| **Retrieval Hit Rate** | **1.000** | **Suy giảm** | **1.000** | Khôi phục 100% khả năng truy hồi tài liệu |
-| **Mean Token F1** | **1.000** | **Suy giảm** | **1.000** | Khôi phục độ chính xác câu trả lời |
-| **Great Expectations (GX)** | **PASS** | **FAIL** | **PASS** | Chặn đứng lỗi Unique và Length ở pha lỗi |
-| **Freshness SLA** | **PASS** | **FAIL** | **PASS** | Phát hiện tỷ lệ bài quá hạn > 25% |
-| **Overall Quality Gate** | **PASS** | **FAIL** | **PASS** | Hệ thống tự chữa lành thành công |
+| **Số câu hỏi kiểm thử (Samples)** | 10 | 10 | 10 | Bộ benchmark kiểm thử giữ nguyên vẹn |
+| **Retrieval Hit Rate** | **1.000** | **0.800** | **1.000** | Giảm 20% khi mất bài mới; phục hồi 100% |
+| **Mean Token F1** | **1.000** | **0.700** | **1.000** | Tụt giảm do nhiễu và xóa summary; khôi phục hoàn toàn |
+| **Judge Accuracy** | **1.000** | **0.700** | **1.000** | Khôi phục độ tin cậy câu trả lời chuẩn |
+| **Mean Judge Score** | **5.000** | **3.800** | **5.000** | Điểm số đánh giá chất lượng trở về mức tối đa |
+| **Số bài cũ quá hạn (Stale Rows)** | 0 | 7 | 0 | Phát hiện chính xác 7 bài bị lùi ngày |
+| **Tỷ lệ bài cũ (Stale Ratio)** | 0.000 | 0.333 (33.3%) | 0.000 (0.0%) | Vượt ngưỡng an toàn 25% ở pha lỗi |
+| **Great Expectations (GX)** | **PASS** | **FAIL** | **PASS** | Bắt được vi phạm Unique và Length ở pha lỗi |
+| **Freshness SLA** | **PASS** | **FAIL** | **PASS** | Báo động đỏ khi tỷ lệ bài cũ đạt 33.3% |
+| **Overall Quality Gate** | **PASS** | **FAIL** | **PASS** | Chặn đứng dữ liệu bẩn và mở lại sau khi phục hồi |
 
 ---
 
